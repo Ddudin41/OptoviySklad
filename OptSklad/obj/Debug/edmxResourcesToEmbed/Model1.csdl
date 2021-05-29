@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ddudinModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Title" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="ProductTypeID" Type="Int32" />
+    <Property Name="ArticleNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="Image" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Cost" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+    <NavigationProperty Name="ProductType" Relationship="Self.FK_Product_ProductType" FromRole="Product" ToRole="ProductType" />
+    <NavigationProperty Name="ProductSklad" Relationship="Self.FK_ProductSklad_Product" FromRole="Product" ToRole="ProductSklad" />
+  </EntityType>
+  <EntityType Name="ProductType">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="DefectedPercent" Type="Double" Nullable="false" />
+    <NavigationProperty Name="Product" Relationship="Self.FK_Product_ProductType" FromRole="ProductType" ToRole="Product" />
+  </EntityType>
+  <EntityType Name="Sklad">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Адрес" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="ProductSklad" Relationship="Self.FK_ProductSklad_Sklad" FromRole="Sklad" ToRole="ProductSklad" />
+  </EntityType>
+  <EntityType Name="ProductSklad">
+    <Key>
+      <PropertyRef Name="SkladID" />
+      <PropertyRef Name="ProductID" />
+      <PropertyRef Name="Count" />
+    </Key>
+    <Property Name="SkladID" Type="Int32" Nullable="false" />
+    <Property Name="ProductID" Type="Int32" Nullable="false" />
+    <Property Name="Count" Type="Double" Nullable="false" />
+    <NavigationProperty Name="Product" Relationship="Self.FK_ProductSklad_Product" FromRole="ProductSklad" ToRole="Product" />
+    <NavigationProperty Name="Sklad" Relationship="Self.FK_ProductSklad_Sklad" FromRole="ProductSklad" ToRole="Sklad" />
+  </EntityType>
+  <Association Name="FK_Product_ProductType">
+    <End Role="ProductType" Type="Self.ProductType" Multiplicity="0..1" />
+    <End Role="Product" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ProductType">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Product">
+        <PropertyRef Name="ProductTypeID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductSklad_Product">
+    <End Role="Product" Type="Self.Product" Multiplicity="1" />
+    <End Role="ProductSklad" Type="Self.ProductSklad" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="ProductSklad">
+        <PropertyRef Name="ProductID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_ProductSklad_Sklad">
+    <End Role="Sklad" Type="Self.Sklad" Multiplicity="1" />
+    <End Role="ProductSklad" Type="Self.ProductSklad" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sklad">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="ProductSklad">
+        <PropertyRef Name="SkladID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ddudinEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Product" EntityType="Self.Product" />
+    <EntitySet Name="ProductType" EntityType="Self.ProductType" />
+    <EntitySet Name="Sklad" EntityType="Self.Sklad" />
+    <EntitySet Name="ProductSklad" EntityType="Self.ProductSklad" />
+    <AssociationSet Name="FK_Product_ProductType" Association="Self.FK_Product_ProductType">
+      <End Role="ProductType" EntitySet="ProductType" />
+      <End Role="Product" EntitySet="Product" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductSklad_Product" Association="Self.FK_ProductSklad_Product">
+      <End Role="Product" EntitySet="Product" />
+      <End Role="ProductSklad" EntitySet="ProductSklad" />
+    </AssociationSet>
+    <AssociationSet Name="FK_ProductSklad_Sklad" Association="Self.FK_ProductSklad_Sklad">
+      <End Role="Sklad" EntitySet="Sklad" />
+      <End Role="ProductSklad" EntitySet="ProductSklad" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
