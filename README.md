@@ -222,192 +222,84 @@ ER-модель представляет собой формальную кон�
 
 ### Язык програмирования: C#
 
-### В приложение реализованно редактирование товара(двойной клик по товару), реализовано удаление(правый клик по товару).
+### В приложение реализованно редактирование товара(двойной клик по товару), реализовано удаление(кнопка в окне редактирования).
 
 #### Главное окно:
 ![MainWindow](./img/MainWindow.PNG)
 
 ##### Код разметки окна:
 ```xml
-<Grid Background="#374785" Margin="10">
-        
+<Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-
-        <StackPanel 
-            Orientation="Vertical"
-            VerticalAlignment="Top"
-            Width="150">
-            <Button Margin="4" BorderBrush="Black" BorderThickness="2" Background="#C5CBE3" x:Name="AddButton" Content="Добавить" Click="AddButton_Click" VerticalAlignment="Top" Height="40" FontFamily="Century Gothic" FontSize="14"/>
-            <Button Margin="4" BorderBrush="Black" BorderThickness="2" Background="#C5CBE3" x:Name="RefreshButton" Content="Обновить список" Click="RefreshButton_Click" VerticalAlignment="Top" Height="40" FontFamily="Century Gothic" FontSize="14"/>
+        <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
+            <Button Content="Добавить" Margin="1.5" Name="AddProduct" Click="AddProduct_Click"/>
+            <Button Content="Выход" Margin="1.5" Click="Button_Click"/>
         </StackPanel>
-        <Button Height="40" BorderBrush="Black" BorderThickness="2" Background="#C5CBE3" x:Name="Exit" Content="Выход" Click="Exit_Click" VerticalAlignment="Bottom" FontFamily="Century Gothic" FontSize="14" Margin="4"/>
-
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-
-            <WrapPanel 
-                Orientation="Horizontal"
-                ItemHeight="50">
-                
-                <Label 
-                    Foreground="#C5CBE3"
-                    Content="Сортировка: "
-                    Margin="10,0,10,0"
-                    VerticalAlignment="Center"
-                    FontFamily="Century Gothic"/>
-
-                <RadioButton
-                    Foreground="#C5CBE3"
-                    GroupName="Rooms"
-                    Tag="1"
-                    Content="А-Я"
-                    IsChecked="True"
-                    Checked="RadioButton_Checked"
-                    VerticalAlignment="Center"
-                    Margin="0 0 10 0"/>
-                <RadioButton
-                    Foreground="#C5CBE3"
-                    GroupName="Rooms"
-                    Tag="2"
-                    Content="Я-А"
-                    Checked="RadioButton_Checked"
-                    VerticalAlignment="Center"/>
-
-                <Label 
-                    Foreground="#C5CBE3"
-                    Content="Фильтр: "
-                    Margin="10,0,10,0"
-                    VerticalAlignment="Center"
-                    FontFamily="Century Gothic"/>
-
-                <ComboBox
-                    x:Name="FilterTypeComboBox"
-                    SelectedIndex="0"
-                    VerticalContentAlignment="Center"
-                    MinWidth="200"
-                    MinHeight="10"
-                    SelectionChanged="FilterTypeComboBox_SelectionChanged"
-                    ItemsSource="{Binding ProductTypeList}">
+            <WrapPanel Grid.Row="0" Orientation="Horizontal" ItemHeight="30">
+                <Label Content="Сортировка: " Margin="10,0,0,0" VerticalAlignment="Center"/>
+                <ComboBox Name="SortTypeComboBox" SelectedIndex="0" VerticalContentAlignment="Center" MinWidth="200" SelectionChanged="SortTypeComboBox_SelectionChanged" ItemsSource="{Binding SortList}"/>
+                <Label Content="Тип продукта" VerticalAlignment="Center"/>
+                <ComboBox Width="150" x:Name="ProductTypeFilter" VerticalAlignment="Center" SelectedIndex="0" SelectionChanged="ProductTypeFilter_SelectionChanged" ItemsSource="{Binding ProductTypeList}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Title}"/>
+                            <Label Content="{Binding Title}"/>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-
-
-                <Label 
-                    Foreground="#C5CBE3"
-                    Margin="20 0 0 0"
-                    Content="Поиск:" 
-                    VerticalAlignment="Center"
-                    FontFamily="Century Gothic"/>
-                <TextBox
-                    Width="200"
-                    VerticalAlignment="Center"
-                    x:Name="SearchFilterTextBox" 
-                    KeyUp="SearchFilter_KeyUp"
-                    FontFamily="Century Gothic"
-                    BorderThickness="2"/>
+                <Label Content="Искать" VerticalAlignment="Center"/>
+                <TextBox Width="200" VerticalAlignment="Center" x:Name="SearchFiltertextBox" KeyUp="SearchFiltertextBox_KeyUp"/>
             </WrapPanel>
-
-            <ListView
-                Grid.Row="1"
-                ItemsSource="{Binding ProductList}"
-                x:Name="ProductListView"
-                BorderThickness="0"
-                MouseDoubleClick="ProductListView_MouseDoubleClick"
-                Cursor="Hand">
-                
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Cursor="Hand" FontFamily="Century Gothic" Header="Удалить" x:Name="DeleteButton" Click="DeleteButton_Click"/>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-
+            <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Name="ProductListView" MouseDoubleClick="ProductListView_MouseDoubleClick">
                 <ListView.ItemContainerStyle>
                     <Style TargetType="ListViewItem">
-                        <Setter
-                            Property="HorizontalContentAlignment"
-                            Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     </Style>
                 </ListView.ItemContainerStyle>
-
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Border 
-                            BorderThickness="1" 
-                            BorderBrush="Black" 
-                            CornerRadius="10">
-                            <Grid 
-                                Margin="10"
-                                HorizontalAlignment="Stretch">
+                        <Border BorderThickness="1" BorderBrush="Black" CornerRadius="5">
+                            <Grid Margin="10" HorizontalAlignment="Stretch">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="64"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="100"/>
                                 </Grid.ColumnDefinitions>
-
-                                <Image
-                                    Width="64" 
-                                    Height="64"
-                                    Source="{Binding Path=ImagePreview}" />
-
+                                <Image Width="64" Height="64" Source="{Binding Path=ImagePreview}"/>
+                                <TextBlock Text="{Binding Cost}" Grid.Column="2" HorizontalAlignment="Right" Margin="10"/>
                                 <Grid Grid.Column="1" Margin="5">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="20"/>
                                         <RowDefinition Height="20"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
-
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding ProductType.Title}" FontFamily="Century Gothic"/>
-                                        <TextBlock Text=" | " FontFamily="Century Gothic"/>
-                                        <TextBlock Text="{Binding Title}" FontFamily="Century Gothic"/>
+                                        <TextBlock Text="{Binding ProductType.Title}"/>
+                                        <TextBlock Text=" | "/>
+                                        <TextBlock Text="{Binding Title}"/>
                                     </StackPanel>
-
-                                    <TextBlock 
-                                        Text="{Binding ArticleNumber}"
-                                        Grid.Row="1"
-                                        FontFamily="Century Gothic"/>
+                                    <TextBlock Text="{Binding ArticleNumber}" Grid.Row="1"/>
+                                    <TextBlock Text="{Binding Sklad}" Grid.Row="2"/>
                                 </Grid>
-
-                                <TextBlock 
-                                    Text="{Binding MinCostForAgent}"
-                                    Grid.Column="2"
-                                    HorizontalAlignment="Right"
-                                    Margin="10"
-                                    FontFamily="Century Gothic"/>
-
                             </Grid>
                         </Border>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-
             </ListView>
-
-            <StackPanel
-                Grid.Row="2"
-                HorizontalAlignment="Right" 
-                Orientation="Horizontal">
-                <Button Background="#C5CBE3" Content="Назад" Name="PrevPage" Click="PrevPage_Click"/>
-                <TextBlock 
-                    Text="{Binding CurrentPage, StringFormat=Страница {0}}"
-                    VerticalAlignment="Center"
-                    Margin="5"
-                    FontFamily="Century Gothic"
-                    FontSize="14"/>
-                <Button Background="#C5CBE3" Content="Вперёд" Name="NextPage" Click="NextPage_Click"/>
+            <StackPanel Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Content="Предыдущая" Name="PrevPage" Click="PrevPage_Click"/>
+                <TextBlock Text="{Binding CurrentPage, StringFormat=Страница {0}}" VerticalAlignment="Center" Margin="5"/>
+                <Button Content="Следующая" Name="NextPage" Click="NextPage_Click"/>
             </StackPanel>
         </Grid>
-
     </Grid>
 ```
 ##### Логика главного окна:
@@ -419,19 +311,41 @@ public partial class Product
         {
             get
             {
-                var imageName = Environment.CurrentDirectory + Image ?? "";
-                return System.IO.File.Exists(imageName) ? new Uri(imageName) : new Uri("pack://application:,,,/products/picture.png");
+                var ImageName = Environment.CurrentDirectory + Image ?? "";
+                return System.IO.File.Exists(ImageName) ? new Uri(ImageName) : new Uri("pack://application:,,,/Images/picture.png");
+            }
+        }
+        public string Sklad
+        {
+            get
+            {
+                var res = "";
+                //res = "Склад № ";
+                foreach (var ps in ProductSklad)
+                {
+                    res = "Склад № " + ps.SkladID + ", " + ps.Sklad.Адрес + ", В количестве: " + ps.Count;
+                }
+                if(res=="")
+                {
+                    res = "Нет на складах";
+                }
+                return res;
             }
         }
     }
+
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
+        public List<ProductType> ProductTypeList { get; set; }
         private IEnumerable<Product> _ProductList;
 
-        private int _CurrentPage = 1;
-
         public event PropertyChangedEventHandler PropertyChanged;
+        private void Invalidate()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProductList"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentPage"));
+        }
+        private int _CurrentPage = 1;
 
         public int CurrentPage
         {
@@ -441,19 +355,19 @@ public partial class Product
             }
             set
             {
+                // тут проверка, чтобы номер не уходил в минус и в плюс
                 if (value > 0)
                 {
-                    if ((_ProductList.Count() % 10) == 0)
+                    if ((_ProductList.Count() % 4)==0)
                     {
-                        if (value <= _ProductList.Count() / 10)
+                        if (value <= _ProductList.Count() / 4)
                         {
                             _CurrentPage = value;
                             Invalidate();
                         }
-                    }
-                    else
+                    } else
                     {
-                        if (value <= (_ProductList.Count() / 10) + 1)
+                        if (value <= (_ProductList.Count() / 4)+1)
                         {
                             _CurrentPage = value;
                             Invalidate();
@@ -463,6 +377,113 @@ public partial class Product
             }
         }
 
+        public IEnumerable<Product> ProductList
+        {
+            get
+            {
+                var Result = _ProductList;
+
+                if (SearchFilter != "")
+                    Result = Result.Where(ai => (ai.Title.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase) >= 0) || (ai.ArticleNumber.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase)>=0));
+
+                if (_ProductTypeFValue > 0)
+                    Result = Result.Where(ai => ai.ProductType.ID == _ProductTypeFValue);
+
+                switch (SortType)
+                {
+                    case 1:
+                        Result = Result.OrderBy(p => p.Title);
+                        break;
+                    case 2:
+                        Result = Result.OrderByDescending(p => p.Title);
+                        break;
+                    case 3:
+                        Result = Result.OrderBy(p => p.Cost);
+                        break;
+                    case 4:
+                        Result = Result.OrderByDescending(p => p.Cost);
+                        break;
+                }
+
+                return Result.Skip((CurrentPage - 1) * 4).Take(4);
+            }
+            set
+            {
+                _ProductList = value;
+            }
+        }
+        private int SortType = 0;
+        public string[] SortList { get; set; } = {
+            "Без сортировки",
+            "название по убыванию",
+            "название по возрастанию",
+            "цена по убыванию",
+            "цена по возрастанию" };
+        public MainWindow()
+        {
+            InitializeComponent();
+            DataContext = this;
+            ProductList = Core.DB.Product.ToArray();
+            ProductTypeList = Core.DB.ProductType.ToList();
+            ProductTypeList.Insert(0, new ProductType { Title = "Все типы" });
+        }
+        private void PrevPage_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentPage--;
+        }
+
+        private void NextPage_Click(object sender, RoutedEventArgs e)
+        {
+            CurrentPage++;
+        }
+        private void SortTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SortType = SortTypeComboBox.SelectedIndex;
+            Invalidate();
+        }
+
+        private void AddProduct_Click(object sender, RoutedEventArgs e)
+        {
+            var AddWindow = new ProductWindow(new Product(),0);
+            if (AddWindow.ShowDialog() == true)
+            {
+                ProductList = Core.DB.Product.ToArray();
+                Invalidate();
+            }
+        }
+
+        private void ProductListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var EditWindow = new ProductWindow(ProductListView.SelectedItem as Product,1);
+            if (EditWindow.ShowDialog() == true)
+            {
+                ProductList = Core.DB.Product.ToArray();
+                Invalidate();
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+        private int _ProductTypeFValue = 0;
+        public int ProductTypeFValue
+        {
+            get
+            {
+                return _ProductTypeFValue;
+            }
+            set
+            {
+                _ProductTypeFValue = value;
+                Invalidate();
+            }
+        }
+
+        private void ProductTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ProductTypeFValue = (ProductTypeFilter.SelectedItem as ProductType).ID;
+        }
         private string _SearchFilter = "";
         public string SearchFilter
         {
@@ -473,194 +494,14 @@ public partial class Product
             set
             {
                 _SearchFilter = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("ApartmentsList"));
-                }
+                Invalidate();
             }
         }
-
-        private void SearchFilter_KeyUp(object sender, KeyEventArgs e)
+        private void SearchFiltertextBox_KeyUp(object sender, KeyEventArgs e)
         {
-            SearchFilter = SearchFilterTextBox.Text;
-            Invalidate();
-        }
-
-        private bool _SortList = true;
-        public bool SortList
-        {
-            get
-            {
-                return _SortList;
-            }
-            set
-            {
-                _SortList = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("ProductList"));
-                }
-            }
-        }
-
-        private void RadioButton_Checked(object sender, RoutedEventArgs e)
-        {
-            SortList = (sender as RadioButton).Tag.ToString() == "1";
-        }
-
-        private void Invalidate()
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProductList"));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentPage"));
-        }
-
-        public IEnumerable<Product> ProductList
-        {
-            get
-            {
-                var Result = _ProductList;
-
-                if (_ProductTypeFilterValue > 0)
-                    Result = Result.Where(ai => ai.ProductTypeID == _ProductTypeFilterValue);
-
-                if (SearchFilter != "")
-                    Result = Result.Where(ai => ai.Title.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase) >= 0);
-
-                if (SortList) Result = Result.OrderBy(ai => ai.Title);
-                else Result = Result.OrderByDescending(ai => ai.Title);
-
-                return Result.Skip((CurrentPage - 1) * 10).Take(10);
-
-                
-
-
-            }
-            set
-            {
-                _ProductList = value;
-
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("ProductList"));
-                }
-            }
-        }
-
-        public IEnumerable<Product> ProductsList
-        {
-            get
-            {
-                var Result = _ProductList;
-
-                if (SearchFilter != "")
-                    Result = Result.Where(ai => ai.Title.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase) >= 0);
-
-                return Result;
-            }
-            set
-            {
-                _ProductList = value;
-            }
-        }
-
-        public List<ProductType> ProductTypeList { get; set; }
-
-        private int _ProductTypeFilterValue = 0;
-        public int ProductTypeFilterValue
-        {
-            get
-            {
-                return _ProductTypeFilterValue;
-            }
-            set
-            {
-                _ProductTypeFilterValue = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("ProductList"));
-                }
-            }
-        }
-        public MainWindow()
-        {
-            InitializeComponent();
-            DataContext = this;
-            ProductList = Core.DB.Product.ToArray();
-            ProductTypeList = Core.DB.ProductType.ToList();
-            ProductTypeList.Insert(0, new ProductType { Title = "Все типы" });
-        }
-
-
-        
-        private void Exit_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void PrevPage_Click(object sender, RoutedEventArgs e)
-        {
-            CurrentPage--;
-        }
-
-        private void NextPage_Click(object sender, RoutedEventArgs e)
-        {
-            CurrentPage++;
-        }
-
-        private void AddButton_Click(object sender, RoutedEventArgs e)
-        {
-            var addWindow = new AddAndEditWindow(new Product());
-            if(addWindow.ShowDialog() == true)
-            {
-                ProductList = Core.DB.Product.ToArray();
-            }
-
-        }
-
-        private void ProductListView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var EditTourWindow = new AddAndEditWindow(ProductListView.SelectedItem as Product);
-            if (EditTourWindow.ShowDialog() == true)
-            {
-                ProductList = Core.DB.Product.ToArray();
-            }
-        }
-
-        private void RefreshButton_Click(object sender, RoutedEventArgs e)
-        {
-            var w = new MainWindow();
-            w.Show();
-
-            this.Close();
-        }
-
-        private void DeleteButton_Click(object sender, RoutedEventArgs e)
-        {
-            var DeleteProduct = ProductListView.SelectedItem as Product;
-            try
-            {
-                Core.DB.Product.Remove(DeleteProduct);
-                Core.DB.SaveChanges();
-
-                MessageBox.Show($"Удалено!");
-
-                ProductList = Core.DB.Product.ToArray();
-
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs("ProductList"));
-                }
-            }
-            catch { }
-
-        }
-
-        private void FilterTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ProductTypeFilterValue = (FilterTypeComboBox.SelectedItem as ProductType).ID;
+            SearchFilter = SearchFiltertextBox.Text;
         }
     }
-}
 ```
 
 #### Окно добавления и редактирования:
@@ -669,101 +510,104 @@ public partial class Product
 
 ##### Код разметки окна:
 ```xml
-<Grid Background="#374785" Margin="10">
-        <StackPanel>
-            <Label Foreground="#C5CBE3" Content="Тип товара:"/>
-            <ComboBox
-                ItemsSource="{Binding productTypesss}"
-                SelectedItem="{Binding CurrentProduct.ProductType}"
-                FontFamily="Century Gothic"
-                Cursor="Hand">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <Label Cursor="Hand" Content="{Binding Title}" FontFamily="Century Gothic"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Label 
-                FontFamily="Century Gothic"
-                Foreground="#C5CBE3"
-                Content="Название:"/>
-            <TextBox 
-                FontFamily="Century Gothic"
-                Height="20"
-                Text="{Binding CurrentProduct.Title}"
-                Cursor="IBeam"/>
-            <Label 
-                FontFamily="Century Gothic"
-                Foreground="#C5CBE3"
-                Content="Артикул:"/>
-            <TextBox 
-                FontFamily="Century Gothic"
-                Height="20" 
-                Text="{Binding CurrentProduct.ArticleNumber}"
-                Cursor="IBeam"/>
-            <Label 
-                FontFamily="Century Gothic"
-                Foreground="#C5CBE3"
-                Content="Минимальная цена для агента:"/>
-            <TextBox 
-                FontFamily="Century Gothic"
-                Height="20"
-                Text="{Binding CurrentProduct.MinCostForAgent}"
-                Cursor="IBeam"/>
-        </StackPanel>
-        <StackPanel 
-                VerticalAlignment="Bottom">
-
-            <Button Background="#C5CBE3" x:Name="SaveButton" Content="Сохранить" Click="SaveButton_Click" Height="40" Margin="0,20,0,0"/>
-            <Button Background="#C5CBE3" x:Name="BackButton" Content="Назад" Click="BackButton_Click" Margin="0,4,0,0" Height="40"/>
+<Grid>
+        <StackPanel Orientation="Vertical">
+            <StackPanel Orientation="Horizontal" Margin="0,10">
+                <WrapPanel ItemHeight="30" Orientation="Vertical" Margin="10,0">
+                    <Label Content="Тип продукта"/>
+                    <ComboBox ItemsSource="{Binding ProdTypeList}" SelectedItem="{Binding CurrentProduct.ProductType}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding Title}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </WrapPanel>
+                <WrapPanel ItemHeight="30" Orientation="Vertical" Margin="10,0">
+                    <Label Content="Наименование"/>
+                    <TextBox Text="{Binding CurrentProduct.Title}" FontSize="18"/>
+                </WrapPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,10">
+                <Label Content="Артикул"/>
+                <TextBox Text="{Binding CurrentProduct.ArticleNumber}" MinWidth="50" Margin="0,0,10,0"/>
+                <Label Content="Описание"/>
+                <TextBox Text="{Binding CurrentProduct.Description}" MinWidth="50" Margin="0,0,10,0"/>
+                <Label Content="Цена"/>
+                <TextBox Text="{Binding CurrentProduct.Cost}" MinWidth="50" Margin="0,0,10,0"/>
+            </StackPanel>
+            <Button x:Name="SaveButton" Content="Сохранить" Click="SaveButton_Click" HorizontalAlignment="Left"/>
+            <Button x:Name="DeleteButton" Content="Удалить" Click="DeleteButton_Click" HorizontalAlignment="Left"/>
         </StackPanel>
     </Grid>
 ```
 ##### Логика данного окна:
 
 ```cs
-public partial class AddAndEditWindow : Window
+public partial class ProductWindow : Window
     {
-        public static kkEntities DB = new kkEntities();
         public Product CurrentProduct { get; set; }
-        public IEnumerable<ProductType> productTypesss { get; set; }
-
-
-        public AddAndEditWindow(Product productsss)
+        public IEnumerable<ProductType> ProdTypeList { get; set; }
+        public IEnumerable<ProductSklad> SkladList { get; set; }
+        public Sklad CurSklad;
+        public ProductWindow(Product CurProduct,int type)
         {
             InitializeComponent();
             DataContext = this;
-            CurrentProduct = productsss;
-            productTypesss = Core.DB.ProductType.ToArray();
+            CurrentProduct = CurProduct;
+            ProdTypeList = Core.DB.ProductType.ToArray();
+            SkladList = Core.DB.ProductSklad.ToArray();
+            if (type == 0)
+            {
+                DeleteButton.Visibility = Visibility.Collapsed;
+            } else
+            {
+                DeleteButton.Visibility = Visibility.Visible;
+            }
         }
+
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 if (CurrentProduct.ProductType == null)
-                    throw new Exception("Не выбран тип");
-
+                    throw new Exception("Не выбран Тип продукта");
+                if (CurrentProduct.Title == "")
+                    throw new Exception("Не выбрано Наименование");
+                if (CurrentProduct.ArticleNumber == null)
+                    throw new Exception("Не указан артикул");
+                if (CurrentProduct.Cost == 0)
+                    throw new Exception("Не указан цена");
                 if (CurrentProduct.ID == 0)
                     Core.DB.Product.Add(CurrentProduct);
-
                 Core.DB.SaveChanges();
-
                 DialogResult = true;
-
-                MessageBox.Show($"Сохранено");
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка");
+                MessageBox.Show($"Ошибка: {ex.Message}");
             }
         }
 
-        private void BackButton_Click(object sender, RoutedEventArgs e)
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            if (CurrentProduct.ProductSklad.Count > 0)
+            {
+                MessageBox.Show("Нельзя удалить товар, который лежит на складе");
+                return;
+            }
+            try
+            {
+                Core.DB.Product.Remove(CurrentProduct);
+                Core.DB.SaveChanges();
+                DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при удалении товара: {ex.Message}");
+            }
         }
     }
-}
 ```
 
 # Заключение
