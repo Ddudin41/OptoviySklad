@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OptSklad"
         mc:Ignorable="d"
-        Title="MainWindow" Height="470" Width="800">
+        Title="MainWindow" Height="470" Width="900">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="100"/>
@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Bottom">
             <Button Content="Добавить" Margin="1.5" Name="AddProduct" Click="AddProduct_Click"/>
-            <Button Content="Выход" Margin="1.5"/>
+            <Button Content="Выход" Margin="1.5" Click="Button_Click"/>
         </StackPanel>
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
@@ -24,6 +24,16 @@
             <WrapPanel Grid.Row="0" Orientation="Horizontal" ItemHeight="30">
                 <Label Content="Сортировка: " Margin="10,0,0,0" VerticalAlignment="Center"/>
                 <ComboBox Name="SortTypeComboBox" SelectedIndex="0" VerticalContentAlignment="Center" MinWidth="200" SelectionChanged="SortTypeComboBox_SelectionChanged" ItemsSource="{Binding SortList}"/>
+                <Label Content="Тип продукта" VerticalAlignment="Center"/>
+                <ComboBox Width="150" x:Name="ProductTypeFilter" VerticalAlignment="Center" SelectedIndex="0" SelectionChanged="ProductTypeFilter_SelectionChanged" ItemsSource="{Binding ProductTypeList}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Label Content="{Binding Title}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Label Content="Искать" VerticalAlignment="Center"/>
+                <TextBox Width="200" VerticalAlignment="Center" x:Name="SearchFiltertextBox" KeyUp="SearchFiltertextBox_KeyUp"/>
             </WrapPanel>
             <ListView Grid.Row="1" ItemsSource="{Binding ProductList}" Name="ProductListView" MouseDoubleClick="ProductListView_MouseDoubleClick">
                 <ListView.ItemContainerStyle>

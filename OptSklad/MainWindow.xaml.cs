@@ -49,6 +49,7 @@ namespace OptSklad
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public List<ProductType> ProductTypeList { get; set; }
         private IEnumerable<Product> _ProductList;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -95,6 +96,12 @@ namespace OptSklad
             {
                 var Result = _ProductList;
 
+                if (SearchFilter != "")
+                    Result = Result.Where(ai => (ai.Title.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase) >= 0) || (ai.ArticleNumber.IndexOf(SearchFilter, StringComparison.OrdinalIgnoreCase)>=0));
+
+                if (_ProductTypeFValue > 0)
+                    Result = Result.Where(ai => ai.ProductType.ID == _ProductTypeFValue);
+
                 switch (SortType)
                 {
                     case 1:
@@ -130,6 +137,8 @@ namespace OptSklad
             InitializeComponent();
             DataContext = this;
             ProductList = Core.DB.Product.ToArray();
+            ProductTypeList = Core.DB.ProductType.ToList();
+            ProductTypeList.Insert(0, new ProductType { Title = "Все типы" });
         }
         private void PrevPage_Click(object sender, RoutedEventArgs e)
         {
@@ -164,6 +173,46 @@ namespace OptSklad
                 ProductList = Core.DB.Product.ToArray();
                 Invalidate();
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+        private int _ProductTypeFValue = 0;
+        public int ProductTypeFValue
+        {
+            get
+            {
+                return _ProductTypeFValue;
+            }
+            set
+            {
+                _ProductTypeFValue = value;
+                Invalidate();
+            }
+        }
+
+        private void ProductTypeFilter_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ProductTypeFValue = (ProductTypeFilter.SelectedItem as ProductType).ID;
+        }
+        private string _SearchFilter = "";
+        public string SearchFilter
+        {
+            get
+            {
+                return _SearchFilter;
+            }
+            set
+            {
+                _SearchFilter = value;
+                Invalidate();
+            }
+        }
+        private void SearchFiltertextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            SearchFilter = SearchFiltertextBox.Text;
         }
     }
 }
